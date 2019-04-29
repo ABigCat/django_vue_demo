@@ -4,15 +4,21 @@
         <span class="text1">热门搜索</span>
         <!--<el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
       </div>
-      <div v-for="o in 4" :key="o" class="text item">
-        {{'列表内容 ' + o }}
+      <div v-for="(item, index) in dataSet" :key="index" class="text item">
+        {{item}}
       </div>
     </el-card>
 </template>
 
 <script>
     export default {
-        name: "top_search"
+        name: "top_search",
+        props:{
+          dataSet:{
+            type: Array,
+            default: () => []
+          }
+        }
     }
 </script>
 

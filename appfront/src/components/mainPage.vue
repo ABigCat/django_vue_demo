@@ -15,17 +15,16 @@
         </div>
       </div>
       <div class="my_aside">
-        <top_search></top_search>
+        <top_search :data-set="hot_search"></top_search>
       </div>
     </div>
     <div class="my_footer">
       <el-pagination
-          @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page.sync="currentPage"
-          :page-size="8"
+          :page-size="page_size"
           layout="total, prev, pager, next"
-          :total="info_size">
+          :total="total">
       </el-pagination>
     </div>
   </div>
@@ -44,59 +43,57 @@
         return{
           allDatas:[],
           movies: [],
-          info_size: 0,
-          currentPage: 1
+          total: 0,
+          page_nums: 0, // 总页数
+          page_size: 8, // 每页条目数量
+          currentPage: 1, //
+          hot_search: []
         }
       },
       methods:{
+          // 初次创建时获取所有的数据
           fetchData(){
             getSomeMovies().then(response =>{
                 console.log(response.response_datas)
                 this.allDatas = response.response_datas
-                this.buildMovieInfo(this.allDatas,8)
+                this.buildMovieInfo(this.allDatas,this.page_size)
             }).catch(error =>{
               console.log(error)
             })
           },
-          fetchQueryInfo(query){
-            console.log('query:' + query)
-           // getSearchMovies({q:query})
-           //   .then(response =>{
-           //     this.movies = response.all_hits
-           //   }).catch(error =>{
-           //     console.log(error)
-           // })
-          },
+          // 创建本页面的信息
           buildMovieInfo(all_Info, page_size){
-            this.info_size = all_Info.length
-            this.page_size = Math.ceil(this.info_size / 8)
+            this.total = all_Info.length
+            this.page_nums = Math.ceil(this.total / page_size)
             this.currentPage = 1
             if(this.page_size > 0){
-              this.movies = all_Info.slice(0,Math.min(page_size,this.info_size))
+              this.movies = all_Info.slice(0,Math.min(this.page_size,this.total))
             }
           },
+          // 如果页码变化，改变页面的显示数据
           handleCurrentChange(){
-            // console.log('this.currentPage :' + this.currentPage)
-            this.movies = this.allDatas.slice((this.currentPage-1) * 8,Math.min(this.currentPage* 8,this.info_size))
-            // console.log('this.movies :' + this.movies)
+            this.movies = this.allDatas.slice((this.currentPage-1) * page_size,Math.min(this.currentPage* page_size,this.total))
           },
+
+          // 建立查询
           handleQuery(query){
-            // console.log(query)
             getSearchMovies({s:query })
               .then(response =>{
                 this.allDatas = response.all_hits
+                this.hot_search = response.hot_search
                 msg1 = "查询到" +  this.allDatas.length + "电影信息"
                 msg2 = "无匹配的电影信息"
+                // 若匹配的数据不为空，进行一些页面的初始化
                 if(this.allDatas.length > 0){
                    this.$message({
                       message: msg1,
                       type: 'success'
                     });
-                  this.buildMovieInfo(this.allDatas,8)
+                  this.buildMovieInfo(this.allDatas,page_size)
                 } else {
                   this.movies = []
                   this.page_size = 1
-                  this.info_size = 0
+                  this.total = 0
                   this.$message({
                       message: msg2,
                       type: 'info'

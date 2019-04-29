@@ -44,7 +44,7 @@
       this.$emit('notifyQuery',this.query)
       },
       fetchMovieInfo(){
-       getSuggestMovies({"q":this.query})
+       getSuggestMovies({q:this.query})
          .then(response =>{
 
          }).catch(error =>{
