@@ -24,7 +24,7 @@ urlpatterns = [
     # url(r'^api/', include(myapp.urls)),
     url(r'^$', TemplateView.as_view(template_name="index.html")),
     url(r'^test/$', IndexView.as_view(), name="test"),
-    url(r'^suggest/$', SearchSuggest.as_view(), name="suggest"),
+    url(r'^suggest$', SearchSuggest.as_view(), name="suggest"),
 
-    url(r'^search/$', SearchView.as_view(), name="search"),
+    url(r'^search$', SearchView.as_view(), name="search"),
 ]

@@ -20,10 +20,12 @@
     </div>
     <div class="my_footer">
       <el-pagination
+          @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page.sync="currentPage"
           :page-size="page_size"
-          layout="total, prev, pager, next"
+          :page-sizes="[4,6,8,10,20]"
+          layout="total, sizes, prev, pager, next, jumper"
           :total="total">
       </el-pagination>
     </div>
@@ -46,7 +48,7 @@
           total: 0,
           page_nums: 0, // 总页数
           page_size: 8, // 每页条目数量
-          currentPage: 1, //
+          currentPage: 0, //
           hot_search: []
         }
       },
@@ -62,38 +64,49 @@
             })
           },
           // 创建本页面的信息
-          buildMovieInfo(all_Info, page_size){
-            this.total = all_Info.length
-            this.page_nums = Math.ceil(this.total / page_size)
+          buildMovieInfo(){
+            console.log(this.allDatas[0])
+            this.total = this.allDatas.length
+            this.page_nums = Math.ceil(this.total / this.page_size)
             this.currentPage = 1
             if(this.page_size > 0){
-              this.movies = all_Info.slice(0,Math.min(this.page_size,this.total))
+              this.movies = this.allDatas.slice(0,Math.min(this.page_size,this.total))
             }
           },
           // 如果页码变化，改变页面的显示数据
           handleCurrentChange(){
-            this.movies = this.allDatas.slice((this.currentPage-1) * page_size,Math.min(this.currentPage* page_size,this.total))
+            this.movies = this.allDatas.slice((this.currentPage-1) * this.page_size,Math.min(this.currentPage* this.page_size,this.total))
           },
-
+          // 如果每页容量发生变化
+          handleSizeChange(val) {
+            console.log(`每页 ${val} 条`)
+            console.log(val);
+            this.currentPage = 0
+            this.page_size = val
+            this.buildMovieInfo()
+          },
           // 建立查询
           handleQuery(query){
+            this.init()
             getSearchMovies({s:query })
               .then(response =>{
+                console.log(1)
+                console.log("myresponse:" + response)
                 this.allDatas = response.all_hits
                 this.hot_search = response.hot_search
-                msg1 = "查询到" +  this.allDatas.length + "电影信息"
-                msg2 = "无匹配的电影信息"
+                console.log("allDatas" + this.allDatas)
+                console.log("hot_search:" + this.hot_search)
+                let msg1 = "查询到" +  this.allDatas.length + "条电影信息"
+                let msg2 = "无匹配的电影信息"
+                console.log(2)
                 // 若匹配的数据不为空，进行一些页面的初始化
                 if(this.allDatas.length > 0){
                    this.$message({
                       message: msg1,
                       type: 'success'
                     });
-                  this.buildMovieInfo(this.allDatas,page_size)
+                  this.buildMovieInfo()
                 } else {
-                  this.movies = []
-                  this.page_size = 1
-                  this.total = 0
                   this.$message({
                       message: msg2,
                       type: 'info'
@@ -102,6 +115,13 @@
               }).catch(error =>{
                 console.log(error)
             })
+          },
+          // 初始化页面信息
+          init(){
+            this.allDatas = []
+            this.movies = []
+            this.total = 0
+            this.currentPage = 0
           }
       },
       created(){

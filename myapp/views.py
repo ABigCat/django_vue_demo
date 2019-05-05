@@ -10,7 +10,10 @@ from elasticsearch import Elasticsearch
 from myapp.models import MovieType
 
 client = Elasticsearch(hosts=["127.0.0.1"])
-redis_cli = redis.StrictRedis()
+
+# problem：存进去的是字符串类型的数据，取出来却是字节类型的，这是由于python3的与redis交互的驱动的问题，Python2取出来的就是字符串类型的。
+# answer：加上decode_responses=True，写入的键值对中的value为str类型，不加这个参数写入的则为字节类型。
+redis_cli = redis.StrictRedis(decode_responses=True)
 
 # Create your views here.
 class IndexView(View):
@@ -46,24 +49,30 @@ class IndexView(View):
 
         # return render(request, "index.html", {"topn_search":topn_search})
 
+
 # Create your views here.
 class SearchSuggest(View):
     def get(self, request):
-        key_words = request.GET.get('s','')
+        key_words = request.GET.get('s', '')
+        print(key_words)
         re_datas = []
         if key_words:
             s = MovieType.search()
             s = s.suggest('my_suggest', key_words, completion={
-                "field":"suggest", "fuzzy":{
-                    "fuzziness":2
+                "field": "suggest", "fuzzy": {
+                    "fuzziness": 2
                 },
-                "size": 10
+                "size": 5
             })
             suggestions = s.execute_suggest()
-            for match in suggestions.my_suggest[0].options:
-                source = match._source
-                re_datas.append(source["title"])
-        return JsonResponse(re_datas, safe=False)
+            print(suggestions.my_suggest[0].options)
+            for item in suggestions.my_suggest[0].options:
+                source = item._source
+                title = source["title"].split("/", 1)[0]
+                re_datas.append({"value": title})
+
+
+        return JsonResponse({"res_data": re_datas}, safe=False)
 
 
 
@@ -80,9 +89,9 @@ class SearchView(View):
         #(2) redis中添加搜索关键字
         # 如果在键为name的zset中已经存在元素value，则将该元素的score增加amount；
         # 否则向该集合中添加该元素，其score的值为amount
-        redis_cli.zincrby("hot_search", key_words)
+        redis_cli.zincrby("hot_search",1, key_words)
         #(3) 重新获取热门搜索
-        hot_search = redis_cli.zrevrangebyscore("hot_search", "+inf", "-inf", start=0, num=5)
+        hot_search = redis_cli.zrevrangebyscore("hot_search", "+inf", "-inf", start=0, num=5,withscores=True)
         # page = request.GET.get("pageNum", "1")
         # try:
         #     page = int(page)

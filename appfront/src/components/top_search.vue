@@ -14,7 +14,7 @@
     export default {
         name: "top_search",
         props:{
-          dataSet:{
+           dataSet:{
             type: Array,
             default: () => []
           }
