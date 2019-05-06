@@ -59,7 +59,8 @@ answer：加上decode_responses=True，写入的键值对中的value为str类型
 1.错误提示
 ```
   elasticsearch.exceptions.RequestError: 
-  TransportError(400, 'invalid_type_name_exception', "Document mapping type name can't start with '_', found: [_suggest]")
+  TransportError(400, 'invalid_type_name_exception', 
+  "Document mapping type name can't start with '_', found: [_suggest]")
 ```
 搜索提示部分出错，将本地ES降级到5.5.3，同时要下载同版本的ik分词器
 
