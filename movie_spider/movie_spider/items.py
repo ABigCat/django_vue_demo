@@ -12,14 +12,14 @@ from elasticsearch_dsl.connections import connections
 # 连接elasticsearch(搜索引擎)，使用操作搜索引擎的类下面的_doc_type.using连接
 es = connections.create_connection(MovieType._doc_type.using)
 redis_cli = redis.StrictRedis()
-# """
+#
 #      此函数主要用于,连接elasticsearch(搜索引擎)，使用ik_max_word分词器，将传入的字符串进行分词，返回分词后的结果
 #      此函数需要两个参数：
 #      第一个参数：要调用elasticsearch(搜索引擎)分词的索引index，一般是（索引操作类._doc_type.index）
 #      第二个参数：是一个元组，元祖的元素也是元组，元素元祖里有两个值一个是要分词的字符串，第二个是分词的权重，多个分词传多个元祖如下
 #      书写格式：
 #      gen_suggest(lagouType._doc_type.index, ((‘字符串‘, 10),(‘字符串‘, 8)))
-# """
+#
 
 
 def gen_suggests(index,info_tuple):
@@ -36,7 +36,7 @@ def gen_suggests(index,info_tuple):
             new_words = set()
 
         if new_words:
-            suggests.append({"input":list(new_words), "weight":weight})
+            suggests.append({"input": list(new_words), "weight": weight})
 
     return suggests
 
