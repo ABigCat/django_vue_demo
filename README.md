@@ -43,7 +43,7 @@
 
 ## 二、Problem:
 
-#####2019/5/4：
+##### 2019/5/4：
 
 1.错误：redis_cli.zincrby("hot_search", key_words)在es6.7.0下报错缺少value
 
@@ -53,7 +53,7 @@ problem：存进去的是字符串类型的数据，取出来却是字节类型�
 
 answer：加上decode_responses=True，写入的键值对中的value为str类型，不加这个参数写入的则为字节类型。
 
-#####2019/5/5:
+##### 2019/5/5:
 
 1.错误提示
 ```
