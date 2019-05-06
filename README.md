@@ -33,15 +33,16 @@
     // 打包，后端django的Template的目录就是打包后生成的目录，appfront/dist
     npm run build
 ```
-
+## 二、项目创建相关:
 [spider项目创建以及运行]()
 
 [django项目创建以及运行]()
 
 [vue项目创建以及运行]()
+
 [django整合VUe]()
 
-## 二、Problem:
+## 三、Problem:
 
 ##### 2019/5/4：
 
