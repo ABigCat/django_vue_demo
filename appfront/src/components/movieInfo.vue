@@ -5,7 +5,7 @@
       <div>
         <span><a :href="dataSet.movie_url">{{getFirstTitle(dataSet.title)}}</a></span>
         <el-rate
-          v-model="dataSet.star"
+          v-model="(dataSet.star/2).toFixed(1)"
           disabled
           show-score
           :allow-half="true"
@@ -13,6 +13,9 @@
           score-template="{value}"
           :colors="['#99A9BF', '#F7BA2A', '#FF9900']">
         </el-rate>
+        <el-tooltip class="item" effect="dark" :content="dataSet.movieInfo" placement="bottom">
+          <el-button type="text" class="button" size="small">电影详情</el-button>
+        </el-tooltip>
       </div>
       </el-card>
     </div>
@@ -23,7 +26,8 @@ export default {
   name: 'movieInfo',
   data () {
     return {
-      rate: 3.7
+      rate: 3.7,
+      myStar: 0
     }
   },
   methods: {
@@ -36,11 +40,7 @@ export default {
     },
     getFirstTitle(title){
       let titles = title.split('/')
-      console.log(titles)
       return titles[0]
-    },
-    dealStar(star){
-      return parseFloat(star)/2
     }
   },
   props:{

@@ -5,7 +5,7 @@
         <!--<el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
       </div>
       <div v-for="(item, index) in dataSet" :key="index" class="text item">
-        {{item}}
+        <el-button :type="getRandomColor()" round @click="hotClick(index)">{{item[0]}}</el-button>
       </div>
     </el-card>
 </template>
@@ -13,10 +13,25 @@
 <script>
     export default {
         name: "top_search",
+        data(){
+          return{
+            colorSet:["primary","success","warning","danger","info"]
+          }
+        },
         props:{
            dataSet:{
             type: Array,
             default: () => []
+          }
+        },
+        methods:{
+          getRandomColor(){
+            // [0,5)
+            let index = Math.floor(Math.random()*5)
+            return this.colorSet[index]
+          },
+          hotClick(index){
+            this.$emit("notifyClick",this.dataSet[index][0])
           }
         }
     }
