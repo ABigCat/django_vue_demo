@@ -64,9 +64,10 @@ error='Cannot allocate memory' (errno=12)
 -Xms512m
 -Xmx512m
 ```
-##### 2019/5/4：
+#### 2019/5/4：
 
 1.redis部分
+
 问题：redis_cli.zincrby("hot_search", key_words)在es6.7.0下报错缺少value 
   
 解决：加入增量，redis_cli.zincrby("hot_search",1,key_words)
@@ -77,7 +78,7 @@ error='Cannot allocate memory' (errno=12)
 
 解决：加上decode_responses=True，写入的键值对中的value为str类型，不加这个参数写入的则为字节类型。
 
-##### 2019/5/5:
+#### 2019/5/5:
 
 1.ES版本问题！！！ 
 
