@@ -46,23 +46,23 @@
 ## 三、Problem:
 #### 2019/5/3
 
-elasticsearch5.5.3启动失败，出现如下提示：
+1.错误： elasticsearch5.5.3启动失败，出现如下提示：
 ```
 Java HotSpot(TM) 64-Bit Server VM warning: INFO: os::commit_memory(0x0000000085330000, 2060255232, 0) failed; 
 error='Cannot allocate memory' (errno=12)
 ```
 由于elasticsearch5.0默认分配jvm空间大小为2g，修改jvm空间分配
 
-打开ElasticSearch/config/jvm.options
-```
--Xms2g
--Xmx2g
-```
-修改为
-```
--Xms512m
--Xmx512m
-```
+    打开ElasticSearch/config/jvm.options
+    ```
+    -Xms2g
+    -Xmx2g
+    ```
+    修改为
+    ```
+    -Xms512m
+    -Xmx512m
+    ```
 ##### 2019/5/4：
 
 1.错误：redis_cli.zincrby("hot_search", key_words)在es6.7.0下报错缺少value
