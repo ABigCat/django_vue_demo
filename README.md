@@ -13,6 +13,7 @@
 
 #### 2、ES
 - [ElasticSearch](https://www.elastic.co/cn/downloads/past-releases/elasticsearch-5-5-3)：5.5.3
+  运行时如果报错
 - [ik分词器](https://github.com/medcl/elasticsearch-analysis-ik/releases/tag/v5.5.3):5.5.3
 - ElasticSearch Head 插件(如果可以科学上网，直接在应用商店添加；不能的话可以把插件拖到扩展程序中，这里有好多个[Chrome插件下载的网址](https://zhuanlan.zhihu.com/p/35802469),比如https://www.crx4chrome.com/，下载插件后自己百度安装教程，一般拖到Google的扩展程序里就可以了。
 #### 3、前端 
@@ -43,12 +44,30 @@
 [整合django+Vue](https://blog.csdn.net/l2535460824/article/details/89883345)
 
 ## 三、Problem:
+#### 2019/5/3
 
+elasticsearch5.5.3启动失败，出现如下提示：
+```
+Java HotSpot(TM) 64-Bit Server VM warning: INFO: os::commit_memory(0x0000000085330000, 2060255232, 0) failed; 
+error='Cannot allocate memory' (errno=12)
+```
+由于elasticsearch5.0默认分配jvm空间大小为2g，修改jvm空间分配
+
+打开ElasticSearch/config/jvm.options
+```
+-Xms2g
+-Xmx2g
+```
+修改为
+```
+-Xms512m
+-Xmx512m
+```
 ##### 2019/5/4：
 
 1.错误：redis_cli.zincrby("hot_search", key_words)在es6.7.0下报错缺少value
 
-2. 在python3中，关于redis读取数据带有‘b’的问题
+2.在python3中，关于redis读取数据带有‘b’的问题
 
 problem：存进去的是字符串类型的数据，取出来却是字节类型的，这是由于python3的与redis交互的驱动的问题，Python2取出来的就是字符串类型的。
 
@@ -63,6 +82,7 @@ answer：加上decode_responses=True，写入的键值对中的value为str类型
   "Document mapping type name can't start with '_', found: [_suggest]")
 ```
 搜索提示部分出错，将本地ES降级到5.5.3，同时要下载同版本的ik分词器
+
 
 
 
