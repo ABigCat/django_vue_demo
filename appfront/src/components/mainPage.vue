@@ -35,7 +35,7 @@
           @current-change="handleCurrentChange"
           :current-page.sync="currentPage"
           :page-size="page_size"
-          :page-sizes="[4,6,8,10,20]"
+          :page-sizes="[4,5,6,8,10,20]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="total">
       </el-pagination>

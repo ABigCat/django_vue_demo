@@ -1,18 +1,21 @@
 <template>
     <div class="info">
-      <el-card>
+      <el-card shadow="hover">
       <img  class="image" :src="getImages(dataSet.image_url)">
       <div>
-        <span><a :href="dataSet.movie_url">{{getFirstTitle(dataSet.title)}}</a></span>
-        <el-rate
-          v-model="(dataSet.star/2).toFixed(1)"
-          disabled
-          show-score
-          :allow-half="true"
-          text-color="#ff9900"
-          score-template="{value}"
-          :colors="['#99A9BF', '#F7BA2A', '#FF9900']">
-        </el-rate>
+        <div>
+          <a :href="dataSet.movie_url">{{getFirstTitle(dataSet.title)}}</a>
+          <span class="yellowFont">{{dataSet.star}}</span>
+        </div>
+        <!--<el-rate-->
+          <!--v-model="(dataSet.star/2).toFixed(1)"-->
+          <!--disabled-->
+          <!--show-score-->
+          <!--:allow-half="true"-->
+          <!--text-color="#ff9900"-->
+          <!--score-template="{value}"-->
+          <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']">-->
+        <!--</el-rate>-->
         <el-tooltip class="item" effect="dark" :content="dataSet.movieInfo" placement="bottom">
           <el-button type="text" class="button" size="small">电影详情</el-button>
         </el-tooltip>
@@ -40,7 +43,7 @@ export default {
     },
     getFirstTitle(title){
       let titles = title.split('/')
-      return titles[0]
+      return titles[0]+"   "
     }
   },
   props:{
@@ -58,7 +61,10 @@ export default {
     margin: 10px;
   }
   .image{
-    width: 115px;
-    height: 160px;
+    width: 105px;
+    height: 140px;
+  }
+  .yellowFont{
+    color: #F7BA2A;
   }
 </style>
