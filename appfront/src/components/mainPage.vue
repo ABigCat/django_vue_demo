@@ -138,8 +138,10 @@
           // 建立查询
           handleQuery(query){
             this.search_content = query
-            if(!!query)
+            if(!!query){
+              this.activeIndex = '1'
               this.fetchSearchData()
+            }
             else
                this.$message({
                       message: "请输入搜索内容",

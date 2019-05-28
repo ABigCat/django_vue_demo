@@ -26,16 +26,14 @@ class IndexView(View):
             currentPage = int(currentPage)
         except:
             currentPage = 1
-        print("index currentPage:")
-        print(currentPage)
+
         # (2)获取每页条数
         page_size = request.GET.get("page_size", "8")
         try:
             page_size = int(page_size)
         except:
             page_size = 8
-        print("index page_size:")
-        print(page_size)
+
         # (3)获取当前选择搜索的范围
         # data_source = request.GET.get("dataSource", "豆瓣top250")
 
@@ -113,16 +111,14 @@ class SearchView(View):
             currentPage = int(currentPage)
         except:
             currentPage = 1
-        print("search currentPage:")
-        print(currentPage)
+
         # (3)获取每页条数
         page_size = request.GET.get("page_size", "8")
         try:
             page_size = int(page_size)
         except:
             page_size = 8
-        print("search page_size:")
-        print(page_size)
+
         # (4)获取当前选择搜索的范围
         # data_source = request.GET.get("dataSource", "豆瓣top250")
 
@@ -145,7 +141,7 @@ class SearchView(View):
                 "query": {
                     "multi_match": {
                         "query": key_words,
-                        "fields": ["title", "quote","movieInfo"]
+                        "fields": ["title", "quote", "title.pinyin", "movieInfo"]
                     }
                 },
                 "from": (currentPage - 1) * page_size,
