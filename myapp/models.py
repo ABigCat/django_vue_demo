@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from datetime import datetime
-from elasticsearch_dsl import DocType, Date, Nested, Boolean, \
+from elasticsearch_dsl import DocType, Date, Nested, Boolean, field ,tokenizer,\
     analyzer, InnerObjectWrapper, Completion, Keyword, Text, Integer
 
 from elasticsearch_dsl.analysis import CustomAnalyzer as _CustomAnalyzer
@@ -17,13 +17,30 @@ class CustomAnalyzer(_CustomAnalyzer):
 
 ik_analyzer = CustomAnalyzer("ik_max_word", filter=["lowercase"]) #大小写转换（搜索时忽略大小写影响）
 
+pinyin_analyzer = analyzer('pinyin_analyzer',
+    tokenizer=tokenizer('my_pinyin_tokenizer', 'pinyin',
+                        keep_separate_first_letter=False,
+                        keep_full_pinyin=False,
+                        keep_joined_full_pinyin=True,
+                        limit_first_letter_length=16,
+                        keep_original=True,
+                        keep_none_chinese=False,
+                        remove_duplicated_term=True,
+                        lowercase=True),
+    filter=["lowercase"]
+)
+
 class MovieType(DocType):
     # 为了实现搜索提示，添加一个completion字段
     # 由于使用ik_max_word，会出错，所以我们需要自己定义分析器，这样可以避免报错问题
     # 在item中定义生成建议的函数来处理字段 title和movieInfo，并附上各自的权重）https://www.jianshu.com/p/46eb88a4e489
     suggest = Completion(analyzer=ik_analyzer)
     # 电影名称
-    title = Text(analyzer="ik_max_word")
+    title = Text(analyzer="ik_max_word", fields={'pinyin': Text(analyzer=pinyin_analyzer,
+                                                                search_analyzer=pinyin_analyzer,
+                                                                store=False,
+                                                                term_vector="with_offsets",
+                                                                boost=3)})
     # 评分
     star = Keyword()
     # 电影的描述信息，包括导演、主演、电影类型等等

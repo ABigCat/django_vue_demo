@@ -19,8 +19,30 @@ redis_cli = redis.StrictRedis(decode_responses=True)
 class IndexView(View):
     #首页
     def get(self, request):
-        # redis 获取热门搜索
+        # 从request中获取所需参数
+        # (1)获取当前页码
+        currentPage = request.GET.get("currentPage", "1")
+        try:
+            currentPage = int(currentPage)
+        except:
+            currentPage = 1
+        print("index currentPage:")
+        print(currentPage)
+        # (2)获取每页条数
+        page_size = request.GET.get("page_size", "8")
+        try:
+            page_size = int(page_size)
+        except:
+            page_size = 8
+        print("index page_size:")
+        print(page_size)
+        # (3)获取当前选择搜索的范围
+        # data_source = request.GET.get("dataSource", "豆瓣top250")
+
+        # redis 获取热门搜索/从redis查看该类数据总量
         hot_search = redis_cli.zrevrangebyscore("hot_search", "+inf", "-inf", start=0, num=5,withscores=True)
+        douBanTop_count = redis_cli.get("douBanTop_count")
+
         # 获取全部数据
         datas = client.search(
             index="doubanmovie",
@@ -28,15 +50,27 @@ class IndexView(View):
                 "query": {
                     "match_all": {}
                 },
-                "from": 0,
-                "size": 250
+                "from": (currentPage - 1) * page_size,
+                "size": page_size
             }
         )
+        # 数据总数
+        total_nums = datas["hits"]["total"]
+        # 总页数
+        if (total_nums % page_size) > 0:
+            page_nums = int(total_nums / page_size) + 1
+        else:
+            page_nums = int(total_nums / page_size)
+
         response_datas = []
         for item in datas["hits"]["hits"]:
             response_datas.append(item["_source"])
         # 返回前台数据
-        return JsonResponse({"response_datas": response_datas, "hot_search": hot_search}, safe=False)
+        return JsonResponse({"response_datas": response_datas,
+                             "hot_search": hot_search,
+                             "total_nums": total_nums,
+                             "page_nums": page_nums
+                             }, safe=False)
         # 关于JsonResponse https://www.cnblogs.com/guoyunlong666/p/9099397.html
         # 这个类是HttpResponse的子类，它主要和父类的区别在于：
         # 1.它的默认Content - Type
@@ -68,26 +102,41 @@ class SearchSuggest(View):
 
 
 
-
 class SearchView(View):
     def get(self, request):
+        # 从request中获取所需参数
         # (1)获取搜索关键字
         key_words = request.GET.get("s", "")
-        print(key_words)
+        # (2)获取当前页码
+        currentPage = request.GET.get("currentPage", "1")
+        try:
+            currentPage = int(currentPage)
+        except:
+            currentPage = 1
+        print("search currentPage:")
+        print(currentPage)
+        # (3)获取每页条数
+        page_size = request.GET.get("page_size", "8")
+        try:
+            page_size = int(page_size)
+        except:
+            page_size = 8
+        print("search page_size:")
+        print(page_size)
+        # (4)获取当前选择搜索的范围
+        # data_source = request.GET.get("dataSource", "豆瓣top250")
 
-        # 获取当前选择搜索的范围
-        # s_type = request.GET.get("s_type", "article")
+        # redis部分
+        # (1)添加搜索关键字(如果在键为name的zset中已经存在元素value，则将该元素的score增加amount；否则向该集合中添加该元素，其score的值为amount)
+        # (2)重新获取热门搜索
+        if key_words:
+            redis_cli.zincrby("hot_search", 1, key_words)
+        hot_search = redis_cli.zrevrangebyscore("hot_search", "+inf", "-inf", start=0, num=5, withscores=True)
+        # (3)从redis查看该类数据总量
+        douBanTop_count = redis_cli.get("douBanTop_count")
 
-        # (2) redis中添加搜索关键字
-        # 如果在键为name的zset中已经存在元素value，则将该元素的score增加amount；
-        # 否则向该集合中添加该元素，其score的值为amount
-        redis_cli.zincrby("hot_search",1, key_words)
-        # (3) 重新获取热门搜索
-        hot_search = redis_cli.zrevrangebyscore("hot_search", "+inf", "-inf", start=0, num=5,withscores=True)
 
-        # 从redis查看该类数据总量
-        # jobbole_count = redis_cli.get("jobbole_count")
-
+        # 开始查找
         start_time = datetime.now()
         # 根据关键字查找
         response = client.search(
@@ -99,8 +148,8 @@ class SearchView(View):
                         "fields": ["title", "quote","movieInfo"]
                     }
                 },
-                "from": 0,
-                "size": 80,
+                "from": (currentPage - 1) * page_size,
+                "size": page_size,
                 # 对关键字进行高光标红处理
                 "highlight": {
                     "pre_tags": ['<span class="keyWord">'],
@@ -112,9 +161,17 @@ class SearchView(View):
                 }
             }
         )
+        # 结束时间
         end_time = datetime.now()
+        # 耗时
         last_seconds = (end_time - start_time).total_seconds()
+        # 数据总数
         total_nums = response["hits"]["total"]
+        # 总页数
+        if (total_nums % page_size) > 0:
+            page_nums = int(total_nums / page_size) + 1
+        else:
+            page_nums = int(total_nums / page_size)
 
         hit_list = []
         for item in response["hits"]["hits"]:
@@ -139,6 +196,7 @@ class SearchView(View):
         return JsonResponse({"all_hits": hit_list,
                                                "key_words": key_words,
                                                "total_nums": total_nums,
+                                               "page_nums": page_nums,
                                                "last_seconds": last_seconds,
                                                 "hot_search": hot_search}, safe=False)
 

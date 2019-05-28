@@ -7,7 +7,7 @@
     <div class="my_body">
       <!--左侧信息源-->
       <div class="my_left">
-        <data_source></data_source>
+        <data_source :data-sources="data_source" @onDataSourceChange="handleDataSourceChange"></data_source>
       </div>
       <div class="my_main">
         <!--菜单-->
@@ -54,66 +54,55 @@
       components: {Top_search, Data_source, MovieInfo, SearchBox},
       data(){
         return{
-          allDatas:[], // 搜索到的全部数据
-          movies: [], // 当前页面信息
+          movies: [], // 当前页面信息，
           total: 0, // 条目总数
           page_nums: 0, // 总页数
           page_size: 8, // 每页条目数量
-          currentPage: 0, //当前页面
+          currentPage: 1, //当前页面
           hot_search: [],  //热门搜索
           activeIndex: '1', //当前激活菜单
-          menuContent: ["全部","喜剧","科幻","动画","恐怖片"]
+          menuContent: ["全部","喜剧","科幻","动画","恐怖片"],
+          data_source:["豆瓣top250","测试1","测试2", "测试3"],
+          search_content:''
         }
       },
       methods:{
-          // 初次创建时获取所有的数据
+          // 初次创建时获取所有的数据,初始时根据页面激活的菜单和每页条目数量获取如下数据
+          // movies：前几条数据
+          // total: 总条数
+          // page_nums: 总页数
+          // hot_search: 热门搜索
+
           fetchData(){
-            this.init()
-            getSomeMovies().then(response =>{
-                this.allDatas = response.response_datas
+            this.search_content = ''
+            getSomeMovies({currentPage: this.currentPage, page_size: this.page_size}).then(response =>{
+                this.movies = response.response_datas
                 this.hot_search = response.hot_search
-                this.buildMovieInfo(this.allDatas,this.page_size)
+                this.page_nums = response.page_nums
+                this.total = response.total_nums
             }).catch(error =>{
               console.log(error)
             })
           },
-          // 创建本页面的信息
-          buildMovieInfo(){
-            this.total = this.allDatas.length
-            this.page_nums = Math.ceil(this.total / this.page_size)
-            this.currentPage = 1
-            if(this.page_size > 0){
-              this.movies = this.allDatas.slice(0,Math.min(this.page_size,this.total))
-            }
-          },
-          // 如果页码变化，改变页面的显示数据
-          handleCurrentChange(){
-            this.movies = this.allDatas.slice((this.currentPage-1) * this.page_size,Math.min(this.currentPage* this.page_size,this.total))
-          },
-          // 如果每页容量发生变化，需要重新构建首页
-          handleSizeChange(val) {
-            this.currentPage = 0
-            this.page_size = val
-            this.buildMovieInfo()
-          },
-          // 建立查询
-          handleQuery(query){
-            this.init()
-            getSearchMovies({s:query })
+          fetchSearchData(){
+             getSearchMovies({currentPage: this.currentPage, page_size: this.page_size,s:this.search_content })
               .then(response =>{
-                this.allDatas = response.all_hits
                 this.hot_search = response.hot_search
-                let msg1 = "查询到" +  this.allDatas.length + "条电影信息"
+                this.total = response.total_nums
+                this.page_nums = response.page_nums
+                let msg1 = "查询到" +  this.total + "条电影信息"
                 let msg2 = "无匹配的电影信息"
                 // 若匹配的数据不为空，进行一些页面的初始化
-                if(this.allDatas.length > 0){
-                   this.$message({
+                if(this.movies.length > 0){
+                  if(this.currentPage === 1 || this.currentPage ==="1"){
+                    this.$message({
                       message: msg1,
                       type: 'success',
                       duration: 1600,
                       showClose: true
                     });
-                  this.buildMovieInfo()
+                  }
+                  this.movies = response.all_hits
                 } else {
                   this.$message({
                       message: msg2,
@@ -126,25 +115,62 @@
                 console.log(error)
             })
           },
-          // 初始化页面信息
-          init(){
-            this.allDatas = []
-            this.movies = []
-            this.total = 0
-            this.currentPage = 0
+          // 如果页码变化，改变页面的显示数据
+          handleCurrentChange(){
+            console.log('currentPage:' + this.currentPage)
+            this.handleTwoQuery()
+          },
+          // 处理在有无查询条件两种情况下的请求
+          handleTwoQuery(){
+            // 若查询内容不为空
+            if(!!this.search_content){
+              this.fetchSearchData()
+            } else {
+              this.fetchData()
+            }
+          },
+          // 如果每页容量发生变化，需要重新构建首页
+          handleSizeChange(val) {
+            this.currentPage = 1
+            this.page_size = val
+            this.handleTwoQuery()
+          },
+          // 建立查询
+          handleQuery(query){
+            this.search_content = query
+            if(!!query)
+              this.fetchSearchData()
+            else
+               this.$message({
+                      message: "请输入搜索内容",
+                      type: 'warning',
+                      duration: 1600,
+                      showClose: true
+                    })
           },
           // 选中的菜单变化时
           handleSelect(key, keyPath) {
             this.activeIndex = key
-            if(key === '1' || key === 1)
-              this.fetchData()
-            else
-              this.handleQuery(this.menuContent[key-1])
+            if(key == '1' || key == 1) {
+              this.search_content = ''
+            } else {
+              this.search_content = this.menuContent[key-1]
+            }
+            this.currentPage = 1
+            this.handleTwoQuery()
+
           },
           // 响应热门搜索的点击事件
           handleHotClick(hot_query){
             this.activeIndex = '1'
-            this.handleQuery(hot_query)
+            this.search_content = hot_query
+            this.currentPage = 1
+            this.fetchSearchData()
+          },
+          // 响应数据源的变化
+          handleDataSourceChange(data_source){
+            // 重新发起查询请求，获取当前数据源的查询结果
+            console.log("data_source:" + data_source)
           },
           // 返回菜单的index（string类型）
           getIndex(i){

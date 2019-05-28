@@ -61,4 +61,5 @@ class MovieSpiderItem(scrapy.Item):
         movietype.image_url = self["image_url"]
         movietype.suggest = gen_suggests(MovieType._doc_type.index, ((movietype.title, 10),(movietype.quote, 7)))
         movietype.save()
+        redis_cli.incr("douBanTop_count")
         return

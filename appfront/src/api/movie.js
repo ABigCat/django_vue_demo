@@ -5,10 +5,11 @@ import request from '@/utils/request'
  * description：
  */
 
-export function getSomeMovies() {
+export function getSomeMovies(params) {
   return request({
     url: '/test',
-    method: 'get'
+    method: 'get',
+    params
   })
 }
 export function getSuggestMovies(params) {
