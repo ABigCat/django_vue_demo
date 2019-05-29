@@ -62,7 +62,7 @@
 
 [整合django+Vue](https://blog.csdn.net/l2535460824/article/details/89883345)
 
-## 三、Problem==:==
+## 三、Problem
 #### 2019/5/3
 
 **错误**： elasticsearch5.5.3启动失败，出现如下提示：
@@ -87,13 +87,13 @@ error='Cannot allocate memory' (errno=12)
 
 #### 2019/5/4：
 
-- redis部分
+##### 1. redis部分
 
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;问题：redis_cli.zincrby("hot_search", key_words)在es6.7.0下报错缺少value 
   
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;解决：加入增量，redis_cli.zincrby("hot_search",1,key_words)
 
-- 在python3中，关于redis读取数据带有‘b’的问题
+##### 2. 在python3中，关于redis读取数据带有‘b’的问题
 
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;问题：存进去的是字符串类型的数据，取出来却是字节类型的，这是由于python3的与redis交互的驱动的问题，Python2取出来的就是字符串类型的。
 
@@ -101,7 +101,7 @@ error='Cannot allocate memory' (errno=12)
 
 #### 2019/5/5:
 
-- ES版本问题！！！ 
+##### ES版本问题！！！ 
 
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;问题：
 ```
