@@ -28,11 +28,11 @@ class IndexView(View):
             currentPage = 1
 
         # (2)获取每页条数
-        page_size = request.GET.get("page_size", "8")
+        page_size = request.GET.get("page_size", "10")
         try:
             page_size = int(page_size)
         except:
-            page_size = 8
+            page_size = 10
 
         # (3)获取当前选择搜索的范围
         # data_source = request.GET.get("dataSource", "豆瓣top250")
@@ -113,11 +113,11 @@ class SearchView(View):
             currentPage = 1
 
         # (3)获取每页条数
-        page_size = request.GET.get("page_size", "8")
+        page_size = request.GET.get("page_size", "10")
         try:
             page_size = int(page_size)
         except:
-            page_size = 8
+            page_size = 10
 
         # (4)获取当前选择搜索的范围
         # data_source = request.GET.get("dataSource", "豆瓣top250")
@@ -195,4 +195,3 @@ class SearchView(View):
                                                "page_nums": page_nums,
                                                "last_seconds": last_seconds,
                                                 "hot_search": hot_search}, safe=False)
-

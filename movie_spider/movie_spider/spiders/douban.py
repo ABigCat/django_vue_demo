@@ -25,18 +25,19 @@ class DoubanSpider(scrapy.Spider):
             quote = eachMovie.xpath('div[@class="info"]/div[@class="bd"]/p[@class="quote"]/span/text()').extract()
             image_url = eachMovie.xpath('div[@class="pic"]//img/@src').extract()[0]
             movie_url = eachMovie.xpath('div[@class="pic"]//a/@href').extract()[0]
-
+            order = eachMovie.xpath('div[@class="pic"]/em/text()').extract()[0]
             # quote可能为空，因此需要先进行判断
             if quote:
                 quote = quote[0]
             else:
                 quote = ''
             item['title'] = fullTitle
-            item['movieInfo'] = movieInfo
+            item['movie_info'] = movieInfo
             item['star'] = star
             item['quote'] = quote
             item['image_url'] = image_url
             item['movie_url'] = movie_url
+            item['order'] = order
             yield item
         nextLink = selector.xpath('//span[@class="next"]/link/@href').extract()
         # 第10页是最后一页，没有下一页的链接

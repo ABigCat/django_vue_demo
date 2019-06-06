@@ -7,13 +7,13 @@
     <div class="my_body">
       <!--左侧信息源-->
       <div class="my_left">
-        <data_source :data-sources="data_source" @onDataSourceChange="handleDataSourceChange"></data_source>
+        <!--<data_source :data-sources="data_source" @onDataSourceChange="handleDataSourceChange"></data_source>-->
       </div>
       <div class="my_main">
         <!--菜单-->
         <div>
            <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
-             <el-menu-item v-for="(item,i) in menuContent" :index="getIndex(i)">{{item}}</el-menu-item>
+             <el-menu-item v-for="(item,i) in menuContent" :index="getIndex(i)" :key="i">{{item}}</el-menu-item>
            </el-menu>
         </div>
         <!--电影信息-->
@@ -57,7 +57,7 @@
           movies: [], // 当前页面信息，
           total: 0, // 条目总数
           page_nums: 0, // 总页数
-          page_size: 8, // 每页条目数量
+          page_size: 10, // 每页条目数量
           currentPage: 1, //当前页面
           hot_search: [],  //热门搜索
           activeIndex: '1', //当前激活菜单
@@ -180,6 +180,10 @@
           }
       },
       created(){
+        console.log(this)
+        console.log(this.$route.params.searchContent)
+        console.log(this.$router.currentRoute.params.searchContent)
+        // this.$router.currentRoute
          this.fetchData()
       }
     }
@@ -209,7 +213,7 @@
     /*background-color: #13ce66;*/
   }
    .my_left{
-     width: 15%;
+     width: 10%;
      height: 70%;
      min-width: 100px;
      min-height: 400px;
@@ -228,7 +232,7 @@
     /*background-color: #f0c78a;*/
   }
   .my_aside{
-     width: 15%;
+     width: 20%;
      height: 70%;
      min-height: 400px;
      /*border: solid 1px #cccccc;*/

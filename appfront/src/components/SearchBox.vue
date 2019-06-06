@@ -1,7 +1,6 @@
 <template>
     <div class="search-box">
       <!--<img class="logo" src="@/assets/logo.jpg">-->
-      <div class="input_box">
         <el-autocomplete
             class="inline-input"
             v-model="query"
@@ -12,7 +11,6 @@
             :highlight-first-item="true">
           <el-button type="primary" slot="append" icon="el-icon-search" @click="notifyQuery">搜索</el-button>
         </el-autocomplete>
-    </div>
     </div>
 </template>
 
@@ -59,9 +57,8 @@
     padding: 20px;
     justify-content: center;
   }
-  .input_box{
-    width:80%;
-    padding: 10px;
+  .inline-input{
+    width: 600px;
   }
   .logo{
     width: 150px;

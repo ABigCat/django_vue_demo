@@ -66,8 +66,7 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'movie_spider.pipelines.MovieSpiderPipeline': 300,
-}
+   'movie_spider.pipelines.MovieSpiderPipeline': 300}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -89,3 +88,22 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+
+# 1. 增加了一个去重容器类的配置, 作用使用Redis的set集合来存储请求的指纹数据, 从而实现请求去重的持久化
+DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
+
+# 2. 增加了调度的配置, 作用: 把请求对象存储到Redis数据, 从而实现请求的持久化.
+SCHEDULER = "scrapy_redis.scheduler.Scheduler"
+
+# 3. 配置调度器是否要持久化, 也就是当爬虫结束了, 要不要清空Redis中请求队列和去重指纹的set。如果是True, 就表示要持久化存储, 就不清空数据, 否则清空数据
+SCHEDULER_PERSIST = False
+
+# 4. redis_url配置
+REDIS_URL = "redis://127.0.0.1:6379"
+
+# 5. 如果需要把数据存储到Redis数据库中, 可以配置RedisPipeline
+# ITEM_PIPELINES = {
+# # 把爬虫爬取的数据存储到Redis数据库中
+# ‘scrapy_redis.pipelines.RedisPipeline’: 400,
+# }

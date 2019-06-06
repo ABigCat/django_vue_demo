@@ -3,10 +3,15 @@
       <el-card shadow="hover">
       <img  class="image" :src="getImages(dataSet.image_url)">
       <div>
-        <div>
-          <a :href="dataSet.movie_url">{{getFirstTitle(dataSet.title)}}</a>
-          <span class="yellowFont">{{dataSet.star}}</span>
-        </div>
+        <a :href="dataSet.movie_url">{{getFirstTitle(dataSet.title)}}</a>
+        <p class="yellowFont">
+          <template v-if="!!dataSet.star">
+             {{dataSet.star}}
+          </template>
+          <template v-else>
+            暂无评分
+          </template>
+        </p>
         <!--<el-rate-->
           <!--v-model="(dataSet.star/2).toFixed(1)"-->
           <!--disabled-->
@@ -16,9 +21,9 @@
           <!--score-template="{value}"-->
           <!--:colors="['#99A9BF', '#F7BA2A', '#FF9900']">-->
         <!--</el-rate>-->
-        <el-tooltip class="item" effect="dark" :content="dataSet.movieInfo" placement="bottom">
-          <el-button type="text" class="button" size="small">电影详情</el-button>
-        </el-tooltip>
+        <!--<el-tooltip class="item" effect="dark" :content="dataSet.movieInfo" placement="bottom">-->
+          <!--<el-button type="text" class="button" size="small">电影详情</el-button>-->
+        <!--</el-tooltip>-->
       </div>
       </el-card>
     </div>
@@ -58,7 +63,7 @@ export default {
 <style scoped>
   .info{
     width: 200px;
-    margin: 10px;
+    margin: 5px;
   }
   .image{
     width: 105px;

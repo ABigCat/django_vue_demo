@@ -9,5 +9,4 @@
 class MovieSpiderPipeline(object):
     def process_item(self, item, spider):
         item.save_to_es()
-
         return item

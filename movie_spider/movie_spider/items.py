@@ -40,11 +40,13 @@ def gen_suggests(index,info_tuple):
 
     return suggests
 
+
 class MovieSpiderItem(scrapy.Item):
     # Item是保存爬取到的数据的容器；其使用方法和Python字典类似，
     # 并且提供了额外保护机制来避免拼写错误导致的未定义字段错误。
+    order = scrapy.Field()  # 电影排序
     title = scrapy.Field()  # 电影名字
-    movieInfo = scrapy.Field()  # 电影的描述信息，包括导演、主演、电影类型等等
+    movie_info = scrapy.Field()  # 电影的描述信息，包括导演、主演、电影类型等等
     star = scrapy.Field()  # 电影评分
     quote = scrapy.Field()  # 电影中最经典或者说脍炙人口的一句话
     movie_url = scrapy.Field()  # 电影的url
@@ -53,13 +55,40 @@ class MovieSpiderItem(scrapy.Item):
 
     def save_to_es(self):
         movietype = MovieType()
+        movietype.order = self["order"]
         movietype.title = self["title"]
-        movietype.movieInfo = self["movieInfo"]
+        movietype.movie_info = self["movie_info"]
         movietype.star = self["star"]
         movietype.quote = self["quote"]
         movietype.movie_url = self["movie_url"]
         movietype.image_url = self["image_url"]
-        movietype.suggest = gen_suggests(MovieType._doc_type.index, ((movietype.title, 10),(movietype.quote, 7)))
+        movietype.movie_origin = '1'
+        # movietype.suggest = gen_suggests(MovieType._doc_type.index, ((movietype.title, 10),(movietype.quote, 7)))
         movietype.save()
         redis_cli.incr("douBanTop_count")
+        return
+
+
+class MaoYanMoviesItem(scrapy.Item):
+    order = scrapy.Field()  # 电影排序
+    title = scrapy.Field()  # 电影名字
+    movie_info = scrapy.Field()  # 电影的描述movie.maoyan.com
+    star = scrapy.Field()  # 电影评分
+    movie_url = scrapy.Field()  # 电影详细地址
+    image_url = scrapy.Field()  # 图片地址
+    pass
+
+    def save_to_es(self):
+        movietype = MovieType()
+        movietype.order = self["order"]
+        movietype.title = self["title"]
+        movietype.movie_info = self["movie_info"]
+        movietype.star = self["star"]
+        movietype.quote = ""
+        movietype.movie_url = self["movie_url"]
+        movietype.image_url = self["image_url"]
+        movietype.movie_origin = '2'
+        # movietype.suggest = gen_suggests(MovieType._doc_type.index, ((movietype.title, 10),(movietype.quote, 7)))
+        movietype.save()
+        redis_cli.incr("maoYan_count")
         return
