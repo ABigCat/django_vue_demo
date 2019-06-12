@@ -2,13 +2,14 @@ import json
 from datetime import datetime
 
 import redis
+import pymysql
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.generic.base import View
 from elasticsearch import Elasticsearch
 
 from myapp.models import MovieType
-
+from movie_spider.movie_spider import settings
 client = Elasticsearch(hosts=["127.0.0.1"])
 
 # problem：存进去的是字符串类型的数据，取出来却是字节类型的，这是由于python3的与redis交互的驱动的问题，Python2取出来的就是字符串类型的。
@@ -195,3 +196,39 @@ class SearchView(View):
                                                "page_nums": page_nums,
                                                "last_seconds": last_seconds,
                                                 "hot_search": hot_search}, safe=False)
+
+
+class SearchFromDBView(View):
+    def __init__(self):
+        self.connect = pymysql.connect(
+            host=settings.MYSQL_HOST,
+            db=settings.MYSQL_DBNAME,
+            user=settings.MYSQL_USER,
+            passwd=settings.MYSQL_PASSWD,
+            charset='utf8',
+            use_unicode=True)
+        self.cursor = self.connect.cursor()
+
+    def get(self, request):
+        movie_origin = request.GET.get("movie_origin", "1")
+        # 查询数据
+        sql = """SELECT * FROM top WHERE movie_origin=%s """
+        topMovies = []
+        try:
+            self.cursor.execute(sql, movie_origin)
+            # 获取所有记录列表
+            results = self.cursor.fetchall()
+            for row in results:
+                movie = {
+                    "title": row[1],
+                    "star": row[2],
+                    "movie_info": row[3],
+                    "movie_url": row[4],
+                    "image_url": row[5],
+                    "movie_origin": row[6],
+                    "movie_order": row[7]
+                }
+                topMovies.append(movie)
+        except Exception as err:
+            print("错误信息为：" + str(err))
+        return JsonResponse({ "result": topMovies })

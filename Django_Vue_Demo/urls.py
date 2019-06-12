@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url, include
 from django.views.generic import TemplateView
-from myapp.views import SearchSuggest, IndexView,SearchView
+from myapp.views import SearchSuggest, IndexView,SearchView,SearchFromDBView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,4 +27,5 @@ urlpatterns = [
     url(r'^suggest$', SearchSuggest.as_view(), name="suggest"),
 
     url(r'^search$', SearchView.as_view(), name="search"),
+    url(r'^searchTop$', SearchFromDBView.as_view(), name="searchTop")
 ]

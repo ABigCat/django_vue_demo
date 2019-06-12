@@ -83,7 +83,7 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'django-vue',
+        'NAME': 'movie',
         'USER': 'admin',
         'PASSWORD': 'admin',
         'HOST': '127.0.0.1',
