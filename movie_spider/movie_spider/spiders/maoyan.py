@@ -33,7 +33,8 @@ class MaoyanSpider(scrapy.Spider):
             maoyan_item['star'] = movie_star1 + movie_star2
             maoyan_item['movie_url'] = "https://maoyan.com" + movie_url
             maoyan_item['image_url'] = image_url
-            maoyan_item['movie_info'] = movie_info
+            maoyan_item['movie_info'] = movie_info.replace(" ", "").replace("\n", "")
+            maoyan_item['movie_origin'] = '2'
             # 需要将数据yield到pipelines里面去
             print(maoyan_item)
             yield maoyan_item

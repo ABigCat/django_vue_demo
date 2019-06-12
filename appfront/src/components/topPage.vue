@@ -1,21 +1,21 @@
 <template>
   <div class="menu_box">
-    <el-menu :default-active="activeIndex" class="el-menu-demo"
+    <el-menu :default-active="movie_origin" class="el-menu-demo"
              mode="horizontal"
              background-color="#D1EEEE"
              @select="handleSelect">
-       <el-menu-item v-for="(item,i) in menuContent" :index=item :key="i">{{item}}</el-menu-item>
+       <el-menu-item v-for="(item,index) in menuContent" :index=index :key="index">{{item}}</el-menu-item>
      </el-menu>
     <div class="table_box">
       <el-table :data="tableData" border style="width: 100%">
-        <el-table-column prop="order" label="排名" width="160"></el-table-column>
-        <el-table-column prop="star" label="评分" width="160"></el-table-column>
-        <el-table-column  label="电影名称" width="260">
+        <el-table-column prop="movie_order" label="排名" width="100" align="center"></el-table-column>
+        <el-table-column prop="star" label="评分" width="100" align="center"></el-table-column>
+        <el-table-column  label="电影名称" width="260" align="center">
           <template slot-scope="scope">
-            <a href="scope.row.movie_url">{{scope.row.title}}</a>
+            <a href="scope.row.movie_url" style="color: #c00">{{scope.row.title}}</a>
           </template>
         </el-table-column>
-        <el-table-column  prop="movie_info" label="电影详情" >
+        <el-table-column  prop="movie_info" label="电影详情" align="center">
         </el-table-column>
      </el-table>
     </div>
@@ -24,23 +24,36 @@
 </template>
 
 <script>
+    import {getTopMovies} from "../api/movie";
     export default {
         name: "topPage",
       data(){
           return{
             menuContent: ["首页","豆瓣电影Top250","猫眼Top100"],
-            activeIndex: "豆瓣电影Top250",
-            tableData: []
+            tableData: [],
+            movie_origin: 1
           }
       },
       methods:{
           handleSelect(key, keyPath){
-            console.log("key:" + key)
-            console.log("keypath:" + keyPath)
-            if(key == "首页"){
+            if(key === "0" || key === 0){
               this.$router.push("/")
+            } else {
+              this.movie_origin = key
+              this.fetchTableData();
             }
+          },
+          fetchTableData(){
+            getTopMovies({ "movie_origin": this.movie_origin})
+              .then(response =>{
+              this.tableData = response.result
+            }).catch(error => {
+              console.log(error)
+            })
           }
+      },
+      created() {
+          this.fetchTableData()
       }
     }
 </script>

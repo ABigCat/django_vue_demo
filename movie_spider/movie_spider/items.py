@@ -7,6 +7,7 @@
 import redis
 import scrapy
 from myapp.models import MovieType
+from scrapy.loader.processors import TakeFirst, MapCompose, Join
 from elasticsearch_dsl.connections import connections
 
 # 连接elasticsearch(搜索引擎)，使用操作搜索引擎的类下面的_doc_type.using连接
@@ -37,7 +38,6 @@ def gen_suggests(index,info_tuple):
 
         if new_words:
             suggests.append({"input": list(new_words), "weight": weight})
-
     return suggests
 
 
@@ -45,12 +45,15 @@ class MovieSpiderItem(scrapy.Item):
     # Item是保存爬取到的数据的容器；其使用方法和Python字典类似，
     # 并且提供了额外保护机制来避免拼写错误导致的未定义字段错误。
     order = scrapy.Field()  # 电影排序
-    title = scrapy.Field()  # 电影名字
-    movie_info = scrapy.Field()  # 电影的描述信息，包括导演、主演、电影类型等等
+    # 电影名字
+    title = scrapy.Field()
+    # 电影的描述movie.maoyan.com
+    movie_info = scrapy.Field()
     star = scrapy.Field()  # 电影评分
     quote = scrapy.Field()  # 电影中最经典或者说脍炙人口的一句话
     movie_url = scrapy.Field()  # 电影的url
     image_url = scrapy.Field()  # 图片的url
+    movie_origin = scrapy.Field()  # 电影来源
     pass
 
     def save_to_es(self):
@@ -76,6 +79,7 @@ class MaoYanMoviesItem(scrapy.Item):
     star = scrapy.Field()  # 电影评分
     movie_url = scrapy.Field()  # 电影详细地址
     image_url = scrapy.Field()  # 图片地址
+    movie_origin = scrapy.Field()  # 电影来源
     pass
 
     def save_to_es(self):

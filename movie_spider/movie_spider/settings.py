@@ -15,6 +15,11 @@ SPIDER_MODULES = ['movie_spider.spiders']
 NEWSPIDER_MODULE = 'movie_spider.spiders'
 
 
+MYSQL_HOST = "localhost"  # 数据库地址
+MYSQL_DBNAME = 'movie'  # 数据库名字
+MYSQL_USER = 'admin'  # 数据库登录名
+MYSQL_PASSWD = 'admin'  # 数据库登录密码
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'movie_spider (+http://www.yourdomain.com)'
 USER_AGENT = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50'

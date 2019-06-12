@@ -19,7 +19,7 @@ class DoubanSpider(scrapy.Spider):
         #  它是一个新选择器的列表。这个API可以用来快速的提取嵌套数据。
         for eachMovie in Movies:
             title = eachMovie.xpath('div[@class="info"]/div[@class="hd"]/a/span/text()').extract()  # 多个span标签
-            fullTitle = "".join(title)  # 将多个字符串无缝连接起来
+            fullTitle = "".join(title)# 将多个字符串无缝连接起来
             movieInfo = eachMovie.xpath('div[@class="info"]/div[@class="bd"]/p/text()').extract()
             star = eachMovie.xpath('div[@class="info"]/div[@class="bd"]/div[@class="star"]/span/text()').extract()[0]
             quote = eachMovie.xpath('div[@class="info"]/div[@class="bd"]/p[@class="quote"]/span/text()').extract()
@@ -31,13 +31,14 @@ class DoubanSpider(scrapy.Spider):
                 quote = quote[0]
             else:
                 quote = ''
-            item['title'] = fullTitle
-            item['movie_info'] = movieInfo
+            item['title'] = fullTitle.split("/")[0].split()[0]
+            item['movie_info'] = "".join(movieInfo).replace(" ", "").replace("\n", "")
             item['star'] = star
             item['quote'] = quote
             item['image_url'] = image_url
             item['movie_url'] = movie_url
             item['order'] = order
+            item['movie_origin'] = '1'
             yield item
         nextLink = selector.xpath('//span[@class="next"]/link/@href').extract()
         # 第10页是最后一页，没有下一页的链接
