@@ -26,3 +26,10 @@ export function getSearchMovies(params) {
     params
   })
 }
+export function getTopMovies(params) {
+  return request({
+    url: '/searchTop',
+    method: 'get',
+    params
+  })
+}
