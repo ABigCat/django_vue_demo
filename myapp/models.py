@@ -37,7 +37,7 @@ class MovieType(DocType):
     # 为了实现搜索提示，添加一个completion字段
     # 由于使用ik_max_word，会出错，所以我们需要自己定义分析器，这样可以避免报错问题
     # 在item中定义生成建议的函数来处理字段 title和movieInfo，并附上各自的权重）https://www.jianshu.com/p/46eb88a4e489
-    # suggest = Completion(analyzer=ik_analyzer)
+    suggest = Completion(analyzer=ik_analyzer)
     # 电影排序
     order = Keyword()
     # 电影名称
@@ -62,12 +62,12 @@ class MovieType(DocType):
     class Meta:
         # 数据库名称和表名称
         index = "movie"
-        doc_type = "top"
+        doc_type = "douban"
 
     class Index:
         # 数据库名称和表名称
         name = "movie"
-        doc_type = "top"
+        doc_type = "douban"
 
 if __name__ == '__main__':
     MovieType.init()

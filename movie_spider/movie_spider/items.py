@@ -65,7 +65,7 @@ class MovieSpiderItem(scrapy.Item):
         movietype.quote = self["quote"]
         movietype.movie_url = self["movie_url"]
         movietype.image_url = self["image_url"]
-        movietype.movie_origin = '1'
+        movietype.movie_origin = 'douban'
         # movietype.suggest = gen_suggests(MovieType._doc_type.index, ((movietype.title, 10),(movietype.quote, 7)))
         movietype.save()
         redis_cli.incr("douBanTop_count")
@@ -91,7 +91,7 @@ class MaoYanMoviesItem(scrapy.Item):
         movietype.quote = ""
         movietype.movie_url = self["movie_url"]
         movietype.image_url = self["image_url"]
-        movietype.movie_origin = '2'
+        movietype.movie_origin = 'maoyan'
         # movietype.suggest = gen_suggests(MovieType._doc_type.index, ((movietype.title, 10),(movietype.quote, 7)))
         movietype.save()
         redis_cli.incr("maoYan_count")

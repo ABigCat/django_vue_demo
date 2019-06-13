@@ -21,21 +21,20 @@ class MovieSpiderPipeline(object):
 
     def process_item(self, item, spider):
         # 存储到es
-        # item.save_to_es()
-        print(item)
+        item.save_to_es()
         # 存储到数据库
-        try:
-            self.cursor.execute(
-                """insert into top(title,star,movie_info,image_url,movie_order,movie_url,movie_origin)
-                  values(%s,%s,%s,%s,%s,%s,%s)""",
-                (item['title'],
-                 item['star'],
-                 item['movie_info'],
-                 item['image_url'],
-                 item['order'],
-                 item['movie_url'],
-                 item['movie_origin']))
-            self.connect.commit()
-        except Exception as err:
-            print("错误信息为：" + str(err))
+        # try:
+        #     self.cursor.execute(
+        #         """insert into top(title,star,movie_info,image_url,movie_order,movie_url,movie_origin)
+        #           values(%s,%s,%s,%s,%s,%s,%s)""",
+        #         (item['title'],
+        #          item['star'],
+        #          item['movie_info'],
+        #          item['image_url'],
+        #          item['order'],
+        #          item['movie_url'],
+        #          item['movie_origin']))
+        #     self.connect.commit()
+        # except Exception as err:
+        #     print("错误信息为：" + str(err))
         return item

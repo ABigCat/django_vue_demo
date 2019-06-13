@@ -94,9 +94,9 @@ class SearchSuggest(View):
             suggestions = s.execute_suggest()
             print(suggestions.my_suggest[0].options)
             for item in suggestions.my_suggest[0].options:
-                source = item._source
-                title = source["title"].split("/", 1)[0]
-                re_datas.append({"value": title})
+                # source = item._source
+                # title = source["title"].split("/", 1)[0]
+                re_datas.append({"value": item._source["title"]})
         return JsonResponse({"res_data": re_datas}, safe=False)
 
 
@@ -137,12 +137,12 @@ class SearchView(View):
         start_time = datetime.now()
         # 根据关键字查找
         response = client.search(
-            index="doubanmovie",
+            index="movie",
             body={
                 "query": {
                     "multi_match": {
                         "query": key_words,
-                        "fields": ["title", "quote", "title.pinyin", "movieInfo"]
+                        "fields": ["title", "quote", "title.pinyin", "movie_info"]
                     }
                 },
                 "from": (currentPage - 1) * page_size,
