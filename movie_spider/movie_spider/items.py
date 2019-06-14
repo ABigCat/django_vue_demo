@@ -30,7 +30,7 @@ def gen_suggests(index,info_tuple):
     for text, weight in info_tuple:
         if text:
             # 字符串不为空时，调用elasticsearch的analyze接口分析字符串（分词、大小写转换）
-            words =  es.indices.analyze(index=index, body={'text': text, 'analyzer':"ik_max_word",'filter':["lowercase"]})
+            words =  es.indices.analyze(index=index, body={'text': text, 'analyzer':"my_pinyin_analyzer", 'filter':["lowercase"]})
             anylyzed_words = set([r["token"] for r in words["tokens"] if len(r["token"]) > 1])
             new_words = anylyzed_words - used_words
         else:
@@ -66,7 +66,7 @@ class MovieSpiderItem(scrapy.Item):
         movietype.movie_url = self["movie_url"]
         movietype.image_url = self["image_url"]
         movietype.movie_origin = 'douban'
-        # movietype.suggest = gen_suggests(MovieType._doc_type.index, ((movietype.title, 10),(movietype.quote, 7)))
+        movietype.suggest = gen_suggests(MovieType._doc_type.index, ((movietype.title, 10), (movietype.quote, 3), (movietype.movie_info, 3)))
         movietype.save()
         redis_cli.incr("douBanTop_count")
         return

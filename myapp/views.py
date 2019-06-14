@@ -44,7 +44,7 @@ class IndexView(View):
 
         # 获取全部数据
         datas = client.search(
-            index="doubanmovie",
+            index="movie",
             body={
                 "query": {
                     "match_all": {}
@@ -81,7 +81,6 @@ class IndexView(View):
 class SearchSuggest(View):
     def get(self, request):
         key_words = request.GET.get('s', '')
-        print(key_words)
         re_datas = []
         if key_words:
             s = MovieType.search()
@@ -92,7 +91,7 @@ class SearchSuggest(View):
                 "size": 5
             })
             suggestions = s.execute_suggest()
-            print(suggestions.my_suggest[0].options)
+            print(suggestions.my_suggest)
             for item in suggestions.my_suggest[0].options:
                 # source = item._source
                 # title = source["title"].split("/", 1)[0]
@@ -121,7 +120,6 @@ class SearchView(View):
             page_size = 10
 
         # (4)获取当前选择搜索的范围
-        # data_source = request.GET.get("dataSource", "豆瓣top250")
 
         # redis部分
         # (1)添加搜索关键字(如果在键为name的zset中已经存在元素value，则将该元素的score增加amount；否则向该集合中添加该元素，其score的值为amount)

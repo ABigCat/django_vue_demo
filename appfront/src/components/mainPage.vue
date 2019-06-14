@@ -90,6 +90,7 @@
                 this.hot_search = response.hot_search
                 this.total = response.total_nums
                 this.page_nums = response.page_nums
+                this.movies = response.all_hits
                 let msg1 = "查询到" +  this.total + "条电影信息"
                 let msg2 = "无匹配的电影信息"
                 // 若匹配的数据不为空，进行一些页面的初始化
@@ -102,7 +103,6 @@
                       showClose: true
                     });
                   }
-                  this.movies = response.all_hits
                 } else {
                   this.$message({
                       message: msg2,
@@ -180,11 +180,15 @@
           }
       },
       created(){
-        console.log(this)
-        console.log(this.$route.params.searchContent)
-        console.log(this.$router.currentRoute.params.searchContent)
+        // console.log(this)
+        // console.log(this.$route.params.searchContent)
+        // console.log(this.$router.currentRoute.params.searchContent)
         // this.$router.currentRoute
-         this.fetchData()
+        if(!!this.$router.currentRoute.params.searchContent){
+          this.handleQuery(this.$router.currentRoute.params.searchContent)
+        } else {
+          this.fetchData()
+        }
       }
     }
 </script>
